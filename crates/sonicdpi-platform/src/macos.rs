@@ -24,7 +24,7 @@
 
 use crate::{Interceptor, InterceptorConfig};
 use anyhow::{Context, Result};
-use sonicdpi_engine::{proxy, Direction, Engine};
+use sonicdpi_engine::{proxy, Engine};
 use std::io::{Read, Write};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, TcpListener, TcpStream};
 use std::os::unix::io::AsRawFd;
@@ -272,8 +272,3 @@ fn pf_natlook(client: SocketAddr, local: SocketAddr) -> Result<SocketAddr> {
     Ok(SocketAddr::new(ip, port))
 }
 
-// Direction reference (used in lib.rs dispatch path).
-#[allow(dead_code)]
-fn _direction_outbound() -> Direction {
-    Direction::Outbound
-}

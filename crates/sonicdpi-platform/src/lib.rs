@@ -11,7 +11,9 @@
 //! predictable.
 
 use anyhow::Result;
-use sonicdpi_engine::{Direction, Engine};
+use sonicdpi_engine::Engine;
+#[cfg(any(target_os = "windows", target_os = "linux"))]
+use sonicdpi_engine::Direction;
 use std::sync::Arc;
 
 #[cfg(target_os = "windows")]

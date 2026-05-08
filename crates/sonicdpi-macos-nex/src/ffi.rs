@@ -97,6 +97,13 @@ pub unsafe extern "C" fn sonicdpi_nex_process(bytes: *const u8, len: usize, dire
 
     match state.engine.handle(&mut pkt) {
         Action::Pass => Verdict::Pass as u8,
+        // PassModified = engine mutated `pkt.bytes` in place (e.g.
+        // mss-clamp on a SYN). Surface it as MODIFIED with the
+        // mutated bytes; Swift will then `take_modified` and inject.
+        Action::PassModified => {
+            *state.last_modified.lock() = pkt.bytes.clone();
+            Verdict::Modified as u8
+        }
         Action::Drop => Verdict::Drop as u8,
         Action::Replace(packets) | Action::InjectThenPass(packets) => {
             // For NEX we only support a single replacement packet per

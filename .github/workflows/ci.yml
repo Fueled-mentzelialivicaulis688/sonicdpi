@@ -64,13 +64,9 @@ jobs:
 
   deny:
     runs-on: ubuntu-latest
-    # WinDivert is LGPL-3.0-or-later and the new cargo-deny SPDX parser
-    # has trouble with the `-or-later` suffix in `[[licenses.exceptions]]`.
-    # Documented as a known issue; we keep the job as informational
-    # rather than blocking until upstream resolves it.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command: check licenses
+          rust-version: stable

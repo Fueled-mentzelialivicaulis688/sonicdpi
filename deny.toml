@@ -5,6 +5,7 @@ all-features = false
 
 [licenses]
 version = 2
+# Permissive licenses we accept everywhere.
 allow = [
     "MIT",
     "Apache-2.0",
@@ -18,20 +19,13 @@ allow = [
     "MPL-2.0",
     "CC0-1.0",
     "0BSD",
+    # WinDivert (Windows only) is LGPL-3.0-or-later. We dynamically
+    # link the .dll which keeps the rest of the binary permissive
+    # (LGPL-3 only requires that the WinDivert library remain
+    # replaceable). Documented in THIRD_PARTY_LICENSES.md.
+    "LGPL-3.0-or-later",
 ]
 confidence-threshold = 0.93
-
-# WinDivert is LGPL-3. We dynamically link the .dll which keeps the
-# rest of the binary permissive (LGPL-3 only requires that the
-# WinDivert library remain replaceable). Documented in
-# THIRD_PARTY_LICENSES.md.
-[[licenses.exceptions]]
-name = "windivert"
-allow = ["LGPL-3.0-or-later"]
-
-[[licenses.exceptions]]
-name = "windivert-sys"
-allow = ["LGPL-3.0-or-later"]
 
 [bans]
 # Transitive duplicates of `windows`, `windows-sys`, `windows-targets`,

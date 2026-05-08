@@ -8,7 +8,22 @@
 
 **Открытый кросс-платформенный обход DPI для YouTube и Discord (включая голосовые каналы).** Альтернатива zapret / GoodbyeDPI / byedpi на Rust — один движок, три ОС, готовые сборки. Снимает замедление YouTube, чинит «Checking for updates» и «Update failed» в Discord, возвращает голосовые каналы.
 
-**Telegram-боты автора:** [@galevpn_bot](https://t.me/galevpn_bot) · [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — VPN на случай если DPI-обхода недостаточно.
+**Telegram-боты автора:**
+- [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — VLESS + Reality + Xray + Hysteria 2. Базовая надёжная связка для любого Wireguard/V2Ray-клиента.
+- [@galevpn_bot](https://t.me/galevpn_bot) — собственный обфускационный протокол **SonicProtocol**, заточенный под РФ-ТСПУ когда классические VLESS/Reality уже палятся.
+
+## ⬇ Скачать готовые сборки
+
+Берите архив с последнего релиза на странице [**Releases**](https://github.com/by-sonic/sonicdpi/releases/latest) или сразу прямой ссылкой:
+
+| Платформа | Архив |
+|---|---|
+| **Windows x64** (Win 10 / 11) | [SonicDPI-windows-x64.zip](https://github.com/by-sonic/sonicdpi/releases/latest/download/SonicDPI-windows-x64.zip) |
+| **Linux x64** (Ubuntu / Debian / Arch / etc.) | [SonicDPI-linux-x64.tar.gz](https://github.com/by-sonic/sonicdpi/releases/latest/download/SonicDPI-linux-x64.tar.gz) |
+| **Linux ARM64** (Raspberry Pi, роутеры, серверы Ampere) | [SonicDPI-linux-arm64.tar.gz](https://github.com/by-sonic/sonicdpi/releases/latest/download/SonicDPI-linux-arm64.tar.gz) |
+| **macOS Apple Silicon** (M1/M2/M3/M4) | [SonicDPI-macos-arm64.tar.gz](https://github.com/by-sonic/sonicdpi/releases/latest/download/SonicDPI-macos-arm64.tar.gz) |
+| **macOS Intel** | [SonicDPI-macos-x64.tar.gz](https://github.com/by-sonic/sonicdpi/releases/latest/download/SonicDPI-macos-x64.tar.gz) |
+| Контрольные суммы | [SHA256SUMS.txt](https://github.com/by-sonic/sonicdpi/releases/latest/download/SHA256SUMS.txt) |
 
 **Ключевые слова:** обход блокировок, обход ТСПУ, антиблок, замедление YouTube, ютуб не работает, дискорд не работает, проверка обновлений Discord, Discord checking for updates fix, обход Роскомнадзора, zapret аналог, GoodbyeDPI на Rust, byedpi альтернатива, WinDivert, NFQUEUE, ClientHello desync, TLS fragmentation, fake-multidisorder, hostfakesplit, обход блокировки YouTube Windows, обход блокировки Discord Mac.
 
@@ -191,8 +206,8 @@ cutoff  = 4
 
 Если ваш провайдер блокирует SonicDPI на L4 (carrier-grade DPI с deep mid-stream классификатором, BGP-фильтрация YouTube IP, полный SNI-блок на edge) — fallback это VPN. Автор поддерживает два собственных:
 
-- 🤖 [@galevpn_bot](https://t.me/galevpn_bot) — VLESS / Reality / VMess через XTLS, бесплатный тариф + платные.
-- 🤖 [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — тот же стек, отдельный пул узлов.
+- 🤖 [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — **VLESS + Reality + Xray + Hysteria 2**. Стандартный стек, работает с любым клиентом v2rayN / Hiddify / NekoBox / Streisand.
+- 🤖 [@galevpn_bot](https://t.me/galevpn_bot) — **SonicProtocol** — собственный обфускационный протокол, заточенный под актуальные итерации ТСПУ. Подключается через брендированный клиент. Использовать когда обычный VLESS/Reality уже палится на этом провайдере.
 
 Оба бота — про обход блокировок в РФ, на знании тех же маршрутов которыми калибруется этот проект.
 

@@ -24,7 +24,7 @@
 
 use crate::{Interceptor, InterceptorConfig};
 use anyhow::{Context, Result};
-use sonicdpi_engine::{Direction, Engine};
+use sonicdpi_engine::{proxy, Direction, Engine};
 use std::io::{Read, Write};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, TcpListener, TcpStream};
 use std::os::unix::io::AsRawFd;

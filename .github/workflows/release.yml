@@ -57,7 +57,12 @@ jobs:
 
       - name: Install Linux deps
         if: runner.os == 'Linux' && matrix.cross != true
-        run: sudo apt-get update && sudo apt-get install -y libnetfilter-queue-dev nftables
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnetfilter-queue-dev nftables \
+            libgtk-3-dev libxdo-dev libayatana-appindicator3-dev \
+            pkg-config
 
       - name: Install cross
         if: matrix.cross == true
@@ -83,7 +88,7 @@ jobs:
           else
             cp target/${{ matrix.target }}/release/sonicdpi-tray${{ matrix.ext }} dist/ 2>/dev/null || true
           fi
-          cp README.md README.ru.md LICENSE-MIT LICENSE-APACHE THIRD_PARTY_LICENSES.md dist/
+          cp README.md LICENSE-MIT LICENSE-APACHE THIRD_PARTY_LICENSES.md dist/
 
       - name: Pack (zip on Windows, tar.gz elsewhere)
         shell: bash

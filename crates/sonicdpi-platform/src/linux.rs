@@ -202,10 +202,10 @@ fn v6_sock_for(proto: u8) -> Result<()> {
         by_proto: parking_lot::Mutex::new(Default::default()),
     });
     let mut m = v6.by_proto.lock();
-    if !m.contains_key(&proto) {
+    if let std::collections::hash_map::Entry::Vacant(e) = m.entry(proto) {
         let s = Socket::new(Domain::IPV6, Type::RAW, Some(Protocol::from(proto as i32)))
             .context("AF_INET6 SOCK_RAW")?;
-        m.insert(proto, s);
+        e.insert(s);
     }
     Ok(())
 }

@@ -77,6 +77,7 @@ pub trait Interceptor: Send {
 
 /// Helper used by all backends: convert `(bytes, direction)` from the
 /// OS into an `Engine` decision and back into action bytes.
+#[cfg(any(target_os = "windows", target_os = "linux"))]
 pub(crate) fn dispatch(
     engine: &Engine,
     bytes: Vec<u8>,

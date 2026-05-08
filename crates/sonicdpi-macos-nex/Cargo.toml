@@ -1,0 +1,28 @@
+[package]
+name = "sonicdpi-macos-nex"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "macOS NetworkExtension System Extension bridge — Rust packet-filter core loaded by NEFilterPacketProvider Swift harness."
+
+[lib]
+name = "sonicdpi_macos_nex"
+# cdylib  -> .dylib that the Swift NEFilterPacketProvider links against
+# staticlib -> .a for embedding inside the .systemextension if you prefer
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+# Engine compiles on every OS. The FFI surface is gated to macOS so on
+# Linux/Windows this crate links into an empty cdylib (and CI stays green).
+sonicdpi-engine = { path = "../sonicdpi-engine", version = "0.1" }
+tracing.workspace = true
+parking_lot.workspace = true
+once_cell.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Apple framework bindings only on Apple targets. objc2 gives us a sound
+# Rust wrapper around Objective-C runtime; we keep the surface tiny and
+# call into NetworkExtension from Swift, not from Rust, so we don't pull
+# objc2-network-extension here yet.
+objc2 = "0.5"

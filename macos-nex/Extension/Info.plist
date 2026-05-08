@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleDisplayName</key>
+    <string>SonicDPI Packet Filter</string>
+    <key>CFBundleExecutable</key>
+    <string>SonicDPIExtension</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.bysonic.sonicdpi.nex.extension</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>SonicDPI Packet Filter</string>
+    <key>CFBundlePackageType</key>
+    <string>SYSX</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.3.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+    <key>NSExtension</key>
+    <dict>
+        <key>NSExtensionPointIdentifier</key>
+        <string>com.apple.networkextension.packet-filter</string>
+        <key>NSExtensionPrincipalClass</key>
+        <string>$(PRODUCT_MODULE_NAME).PacketFilterProvider</string>
+    </dict>
+    <key>NetworkExtension</key>
+    <dict>
+        <key>NEMachServiceName</key>
+        <string>com.bysonic.sonicdpi.nex.extension</string>
+        <key>NEProviderClasses</key>
+        <dict>
+            <key>com.apple.networkextension.packet-filter</key>
+            <string>$(PRODUCT_MODULE_NAME).PacketFilterProvider</string>
+        </dict>
+    </dict>
+</dict>
+</plist>

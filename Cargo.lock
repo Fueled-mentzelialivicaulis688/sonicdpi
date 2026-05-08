@@ -2160,6 +2160,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "sonicdpi-macos-nex"
+version = "0.1.0"
+dependencies = [
+ "objc2 0.5.2",
+ "once_cell",
+ "parking_lot",
+ "sonicdpi-engine",
+ "tracing",
+]
+
+[[package]]
 name = "sonicdpi-platform"
 version = "0.1.0"
 dependencies = [

@@ -5,6 +5,7 @@ members = [
     "crates/sonicdpi-platform",
     "crates/sonicdpi-cli",
     "crates/sonicdpi-tray",
+    "crates/sonicdpi-macos-nex",
 ]
 
 [workspace.package]

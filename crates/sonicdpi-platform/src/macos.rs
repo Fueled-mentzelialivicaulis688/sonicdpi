@@ -271,4 +271,3 @@ fn pf_natlook(client: SocketAddr, local: SocketAddr) -> Result<SocketAddr> {
     };
     Ok(SocketAddr::new(ip, port))
 }
-

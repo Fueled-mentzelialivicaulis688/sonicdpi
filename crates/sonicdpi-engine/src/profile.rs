@@ -285,9 +285,8 @@ impl Profile {
             // QUIC isn't whitelisted the way it used to be. Custom
             // paths override; pass `fake_stun_path` / `fake_discord_path`
             // in the profile to opt out.
-            let fake_stun = load_or_build(c.fake_stun_path.as_deref(), || {
-                QUIC_INITIAL_GOOGLE.to_vec()
-            });
+            let fake_stun =
+                load_or_build(c.fake_stun_path.as_deref(), || QUIC_INITIAL_GOOGLE.to_vec());
             let fake_discord = load_or_build(c.fake_discord_path.as_deref(), || {
                 QUIC_INITIAL_GOOGLE.to_vec()
             });

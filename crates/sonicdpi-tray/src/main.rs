@@ -189,18 +189,11 @@ impl TrayApp {
         let _ = menu.append(&PredefinedMenuItem::separator());
         // VPN-сервисы автора — fallback когда DPI-обхода не хватает
         let vpn_sub = Submenu::new("Если не работает — VPN от автора", true);
-        let bot_bysonicvpn = MenuItem::new(
-            "@bysonicvpn_bot — VLESS + Reality + Xray + HY2",
-            true,
-            None,
-        );
+        let bot_bysonicvpn =
+            MenuItem::new("@bysonicvpn_bot — VLESS + Reality + Xray + HY2", true, None);
         self.menu_ids.bot_bysonicvpn = bot_bysonicvpn.id().clone();
         let _ = vpn_sub.append(&bot_bysonicvpn);
-        let bot_galevpn = MenuItem::new(
-            "@galevpn_bot — SonicProtocol (анти-ТСПУ)",
-            true,
-            None,
-        );
+        let bot_galevpn = MenuItem::new("@galevpn_bot — SonicProtocol (анти-ТСПУ)", true, None);
         self.menu_ids.bot_galevpn = bot_galevpn.id().clone();
         let _ = vpn_sub.append(&bot_galevpn);
         let _ = menu.append(&vpn_sub);

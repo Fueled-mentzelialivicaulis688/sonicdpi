@@ -239,6 +239,7 @@ fn load_profile(arg: &str) -> Result<Profile> {
 
 fn run(profile_arg: &str) -> Result<()> {
     let profile = load_profile(profile_arg)?;
+    print_banner(&profile.name);
     tracing::info!(profile = %profile.name, "starting engine");
 
     let cfg = InterceptorConfig {
@@ -279,6 +280,48 @@ fn run(profile_arg: &str) -> Result<()> {
     let res = interceptor.run(engine, stop_check);
     let _ = interceptor.close();
     res
+}
+
+/// Print a colored ANSI banner with VPN ad blocks. Skipped when stdout
+/// isn't a terminal (e.g. tray spawned us with stdout redirected to a
+/// log file — banner would just clutter the file).
+fn print_banner(profile_name: &str) {
+    use std::io::IsTerminal;
+    if !std::io::stdout().is_terminal() {
+        return;
+    }
+    // ANSI: \x1b[1m bold, \x1b[36m cyan, \x1b[35m magenta, \x1b[33m yellow,
+    //       \x1b[34m blue, \x1b[32m green, \x1b[90m gray, \x1b[0m reset
+    const RESET: &str = "\x1b[0m";
+    const BOLD: &str = "\x1b[1m";
+    const CYAN: &str = "\x1b[36m";
+    const BLUE: &str = "\x1b[34m";
+    const MAGENTA: &str = "\x1b[35m";
+    const YELLOW: &str = "\x1b[33m";
+    const GRAY: &str = "\x1b[90m";
+
+    let version = env!("CARGO_PKG_VERSION");
+    println!();
+    println!("{CYAN}╔══════════════════════════════════════════════════════════════════╗{RESET}");
+    println!("{CYAN}║{RESET}  {BOLD}SonicDPI v{version}{RESET}  —  обход блокировок YouTube + Discord       {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}  {GRAY}github.com/by-sonic/sonicdpi{RESET}                                    {CYAN}║{RESET}");
+    println!("{CYAN}║                                                                  ║{RESET}");
+    println!("{CYAN}║{RESET}  {YELLOW}▼ Если SonicDPI не пробивает — возьми VPN от автора:{RESET}            {CYAN}║{RESET}");
+    println!("{CYAN}║                                                                  ║{RESET}");
+    println!("{CYAN}║{RESET}    {BLUE}{BOLD}@bysonicvpn_bot{RESET}                                              {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}    {GRAY}VLESS + Reality + Xray + Hysteria 2 — стандартный стек{RESET}      {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}    {GRAY}https://t.me/bysonicvpn_bot{RESET}                                  {CYAN}║{RESET}");
+    println!("{CYAN}║                                                                  ║{RESET}");
+    println!("{CYAN}║{RESET}    {MAGENTA}{BOLD}@galevpn_bot{RESET}                                                 {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}    {GRAY}SonicProtocol — собственный анти-ТСПУ протокол{RESET}              {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}    {GRAY}https://t.me/galevpn_bot{RESET}                                     {CYAN}║{RESET}");
+    println!("{CYAN}║                                                                  ║{RESET}");
+    println!(
+        "{CYAN}║{RESET}  Профиль: {BOLD}{:<54}{RESET} {CYAN}║{RESET}",
+        profile_name
+    );
+    println!("{CYAN}╚══════════════════════════════════════════════════════════════════╝{RESET}");
+    println!();
 }
 
 fn init_tracing(level: u8, log_file: Option<&std::path::Path>) {

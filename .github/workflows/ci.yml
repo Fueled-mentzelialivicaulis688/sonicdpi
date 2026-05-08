@@ -33,7 +33,12 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Install Linux deps
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y libnetfilter-queue-dev nftables
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnetfilter-queue-dev nftables \
+            libgtk-3-dev libxdo-dev libayatana-appindicator3-dev \
+            pkg-config
       - run: cargo clippy --workspace --all-targets
 
   test:
@@ -48,7 +53,12 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Install Linux deps
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y libnetfilter-queue-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnetfilter-queue-dev nftables \
+            libgtk-3-dev libxdo-dev libayatana-appindicator3-dev \
+            pkg-config
       # Engine tests don't need root; integration with real interceptors is gated on `--ignored`.
       - run: cargo test --workspace --lib
 

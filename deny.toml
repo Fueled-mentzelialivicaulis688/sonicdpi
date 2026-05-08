@@ -1,6 +1,10 @@
 # cargo-deny configuration. Run `cargo deny check licenses` in CI.
 
+[graph]
+all-features = false
+
 [licenses]
+version = 2
 allow = [
     "MIT",
     "Apache-2.0",
@@ -21,10 +25,13 @@ confidence-threshold = 0.93
 # rest of the binary permissive (LGPL-3 only requires that the
 # WinDivert library remain replaceable). Documented in
 # THIRD_PARTY_LICENSES.md.
-exceptions = [
-    { name = "windivert", allow = ["LGPL-3.0-or-later"] },
-    { name = "windivert-sys", allow = ["LGPL-3.0-or-later"] },
-]
+[[licenses.exceptions]]
+name = "windivert"
+allow = ["LGPL-3.0-or-later"]
+
+[[licenses.exceptions]]
+name = "windivert-sys"
+allow = ["LGPL-3.0-or-later"]
 
 [bans]
 # Transitive duplicates of `windows`, `windows-sys`, `windows-targets`,

@@ -293,8 +293,7 @@ impl Strategy for HostFakeSplit {
         let real_seg =
             crate::builder::build_tcp_segment(pkt, payload, 0, crate::builder::DEFAULT_TTL)?;
 
-        let mut out: Vec<crate::action::FakePacket> =
-            decoys.into_iter().map(Into::into).collect();
+        let mut out: Vec<crate::action::FakePacket> = decoys.into_iter().map(Into::into).collect();
         out.push(crate::action::FakePacket {
             bytes: real_seg,
             ttl_override: None,

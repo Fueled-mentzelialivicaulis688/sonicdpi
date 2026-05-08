@@ -1,0 +1,225 @@
+# SonicDPI — обход блокировок YouTube и Discord (Windows / Linux / macOS)
+
+[![CI](https://github.com/by-sonic/sonicdpi/actions/workflows/ci.yml/badge.svg)](https://github.com/by-sonic/sonicdpi/actions/workflows/ci.yml)
+[![Release](https://github.com/by-sonic/sonicdpi/actions/workflows/release.yml/badge.svg)](https://github.com/by-sonic/sonicdpi/actions/workflows/release.yml)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#лицензия)
+[![Rust](https://img.shields.io/badge/rust-stable-orange.svg)](https://www.rust-lang.org/)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](#поддерживаемые-платформы)
+
+**Открытый кросс-платформенный обход DPI для YouTube и Discord (включая голосовые каналы).** Альтернатива zapret / GoodbyeDPI / byedpi на Rust — один движок, три ОС, готовые сборки. Снимает замедление YouTube, чинит «Checking for updates» и «Update failed» в Discord, возвращает голосовые каналы.
+
+**Telegram-боты автора:** [@galevpn_bot](https://t.me/galevpn_bot) · [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — VPN на случай если DPI-обхода недостаточно.
+
+**Ключевые слова:** обход блокировок, обход ТСПУ, антиблок, замедление YouTube, ютуб не работает, дискорд не работает, проверка обновлений Discord, Discord checking for updates fix, обход Роскомнадзора, zapret аналог, GoodbyeDPI на Rust, byedpi альтернатива, WinDivert, NFQUEUE, ClientHello desync, TLS fragmentation, fake-multidisorder, hostfakesplit, обход блокировки YouTube Windows, обход блокировки Discord Mac.
+
+---
+
+## Зачем ещё один?
+
+- **GoodbyeDPI** — только Windows.
+- **zapret** — мощный, но это C с матрицей сборки, неудобной для не-Linux разработчиков, без официальной macOS-сборки.
+- **byedpi** — userspace SOCKS-прокси, не умеет голос Discord (UDP/RTP).
+
+**SonicDPI** — единый Rust-проект, один движок на три ОС, готовые подписанные релизы, поддержка голосового UDP, декларативные TOML-профили.
+
+## Возможности
+
+- **Кроссплатформенно:** Windows (WinDivert 2.2.2), Linux (NFQUEUE через чистый Rust, без GPL `libnetfilter_queue`), macOS (pf `rdr-to`).
+- **Голос Discord:** перехват UDP к `*.discord.media` на портах 19294–19344 и 50000–50100, прайминг STUN-/Discord-фейками.
+- **Профили в TOML:** declarative, можно роутировать ALT-вариантами когда провайдер пропатчил один.
+- **Встраиваемость:** крейт `sonicdpi-engine` без OS-зависимостей — линкуется в GUI, Electron, кастомный прокси.
+- **Анти-фингерпринт:** фейковые ClientHello / QUIC Initial / STUN генерируются с per-run рандомизацией — нельзя задетектить по статичному байтовому шаблону.
+
+## Стратегии обхода
+
+| Стратегия | Что делает |
+|---|---|
+| `tls-multisplit` | Дробит TLS ClientHello на сегменты с seqovl-перекрытием и подменой паттерна на безопасный SNI. |
+| `fake-multidisorder` | Эмитит N фейковых ClientHello (с нужным fooling — TS / MD5SIG / badseq) до настоящего, классификатор DPI «коммитится» на фейк. |
+| `hostfakesplit` | Переименовывает SNI в первом сегменте на безобидный (`www.google.com`, `ozon.ru`), сервер в итоге собирает оригинал. |
+| `quic-fake-initial` | Прайм-бёрст фейковых QUIC Initial с SNI=google перед настоящим — обходит классификатор YouTube QUIC. |
+| `discord-voice-prime` | UDP-фейки в STUN/Discord-форме перед настоящим RTP, чтобы DPI не успел навесить ярлык на голосовой поток. |
+
+## Встроенные профили
+
+| Имя | Когда использовать |
+|---|---|
+| `youtube-discord` | По умолчанию. Текущий рабочий рецепт на 2026-05: `fake-multidisorder + badseq + ozon.ru × 4`, QUIC-prime × 6, voice-prime × 6. |
+| `youtube-discord-aggressive` | Если default не пробивает Discord-direct (Gateway). Добавляет `fake+multisplit` ALT11. |
+| `youtube-discord-multidisorder` | Если default ловит mid-stream classifier. Out-of-order TLS-сегменты. |
+| `youtube-discord-seqovl` | Совместимость со старым именем профиля. Сейчас алиас default. |
+| `youtube-discord-hostfakesplit` | Когда DPI ловит SNI до пересборки. Переписывает SNI на `www.google.com` / `ozon.ru`. |
+
+```bash
+sonicdpi profiles                          # список
+sonicdpi show youtube-discord -o my.toml   # дамп TOML для редактирования
+sonicdpi run --profile my.toml -v          # запуск с кастомным TOML
+```
+
+## Быстрый старт
+
+### Windows
+
+Скачать архив `SonicDPI-windows-x64.zip` со страницы [Releases](https://github.com/by-sonic/sonicdpi/releases), распаковать, запустить `sonicdpi-tray.exe` — UAC → значок в трее → правый клик → «Включить».
+
+Ручной запуск из админ-PowerShell:
+```powershell
+.\sonicdpi.exe run --profile youtube-discord -vv
+```
+Установить как службу (автозапуск при логине):
+```powershell
+.\sonicdpi.exe install --profile youtube-discord
+```
+
+### Linux
+
+```bash
+sudo apt install nftables
+tar -xzf SonicDPI-linux-x64.tar.gz
+sudo setcap cap_net_admin=eip ./sonicdpi
+./sonicdpi run --profile youtube-discord -vv
+```
+Или через systemd:
+```bash
+sudo ./sonicdpi install --profile youtube-discord
+sudo systemctl enable --now sonicdpi
+journalctl -u sonicdpi -f
+```
+
+### macOS
+
+```bash
+tar -xzf SonicDPI-macos-arm64.tar.gz   # или -x64 на Intel
+sudo ./sonicdpi run --profile youtube-discord -vv
+```
+> ⚠️ В v0.2 голос Discord на macOS не поддерживается (нужен NetworkExtension System Extension — это v0.3+). YouTube/TLS-Discord работают.
+
+## Сборка из исходников
+
+```bash
+# stable rust toolchain
+rustup default stable
+
+# Linux: системные зависимости
+sudo apt install libnetfilter-queue-dev nftables
+
+cargo build --workspace --release
+# готовые бинари в target/release/
+```
+
+Smoke-тесты движка (без сети):
+```bash
+cargo test --workspace --lib
+```
+
+Отладка:
+```bash
+sonicdpi run --profile youtube-discord -vv
+# Лог:
+#   Windows: %LOCALAPPDATA%\SonicDPI\sonicdpi.log
+#   Linux:   journalctl -u sonicdpi
+#   macOS:   /var/log/sonicdpi.log
+```
+
+## Архитектура
+
+```
+                           ┌──────────────────────────┐
+                           │      sonicdpi-cli        │   sonicdpi.exe
+                           │  (clap, profiles, svc)   │
+                           └────────────┬─────────────┘
+                                        │
+                ┌───────────────────────┴──────────────────────┐
+                │                                              │
+   ┌────────────▼────────────┐                  ┌──────────────▼─────────────┐
+   │   sonicdpi-platform     │                  │      sonicdpi-engine       │
+   │ ┌────────────────────┐  │  Action ◄─────┐  │  Flow table                │
+   │ │ Windows: WinDivert │  │               │  │  TLS / QUIC / RTP detect   │
+   │ │ Linux:   NFQUEUE   │──┼──► Engine ────┘  │  Strategy pipeline         │
+   │ │ macOS:   pf rdr-to │  │   (handle pkt)   │   • multisplit + seqovl    │
+   │ └────────────────────┘  │                  │   • fake-multidisorder     │
+   └─────────────────────────┘                  │   • hostfakesplit          │
+                                                │   • quic-fake-initial      │
+                                                │   • discord-voice-prime    │
+                                                └────────────────────────────┘
+```
+
+## UI
+
+Полноценного desktop-GUI **нет** — только `sonicdpi-tray.exe`, минимальный системный трей: правый клик → вкл/выкл, выбор профиля, открыть логи, ссылки на VPN-боты автора и GitHub. Для headless-сценария используйте CLI (`sonicdpi run`) или системную службу. Полноценный Tauri-GUI на v0.5 в roadmap.
+
+## Поддерживаемые платформы
+
+| ОС | Backend | Особенности |
+|---|---|---|
+| **Windows 10 / 11** | WinDivert 2.2.2 (vendored, EV-signed) | Требует админ. UAC обрабатывается `sonicdpi-tray.exe`. |
+| **Linux** (kernel ≥ 6.17) | NFQUEUE через чистый Rust `nfq` | Нужен `cap_net_admin` или root. Требуется nftables. |
+| **macOS 13+** | pf `rdr-to` + transparent proxy | Только TCP в v0.2; голосовой UDP — v0.3. |
+
+## TOML-профиль (схема)
+
+```toml
+name = "my-profile"
+
+[strategies.fake_multidisorder]
+fooling = "badseq"          # ts | md5sig | ts,md5sig | badseq | badsum | ttl=N
+repeats = 4
+decoy_host = "ozon.ru"
+
+[[strategies.tls_multisplit]]
+split_pos = 1
+seqovl    = 568
+seqovl_decoy_host = "4pda.to"
+targets   = ["DiscordCloudflare"]
+
+[[strategies.host_fake_split]]
+fake_host = "www.google.com"
+targets   = ["YouTube", "DiscordGateway"]
+repeats   = 4
+fooling   = "ts"
+
+[strategies.quic_fake_initial]
+repeats = 6
+decoy_host = "www.google.com"
+
+[strategies.discord_voice_prime]
+repeats = 6
+cutoff  = 4
+```
+
+## Если SonicDPI не справляется
+
+Если ваш провайдер блокирует SonicDPI на L4 (carrier-grade DPI с deep mid-stream классификатором, BGP-фильтрация YouTube IP, полный SNI-блок на edge) — fallback это VPN. Автор поддерживает два собственных:
+
+- 🤖 [@galevpn_bot](https://t.me/galevpn_bot) — VLESS / Reality / VMess через XTLS, бесплатный тариф + платные.
+- 🤖 [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — тот же стек, отдельный пул узлов.
+
+Оба бота — про обход блокировок в РФ, на знании тех же маршрутов которыми калибруется этот проект.
+
+## Документация
+
+- [`docs/research-techniques-2026.md`](docs/research-techniques-2026.md) — текущие эффективные техники, threat model, что перестало работать.
+- [`docs/platform-backends.md`](docs/platform-backends.md) — детали интерсепторов на каждой ОС, привилегии, ловушки.
+- [`docs/diagnostics.md`](docs/diagnostics.md) — диагностический ранбук.
+
+## Известные ограничения v0.2
+
+- TCP MD5SIG / badseq / badsum уже работают как fooling-примитивы (использованы в default-профиле).
+- macOS proxy: байтовая модификация первого чанка пока не делается, передача без изменений.
+- macOS UDP (голос Discord на Mac) — нужен NetworkExtension System Extension, в v0.2 нет, ожидается в v0.3.
+
+## Лицензия
+
+MIT OR Apache-2.0. Контрибуции принимаются по тем же условиям. См. [`LICENSE-MIT`](LICENSE-MIT) и [`LICENSE-APACHE`](LICENSE-APACHE).
+
+WinDivert на Windows — LGPL-3, динамически линкуется через DLL, см. [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).
+
+## Благодарности
+
+Стоит на плечах [zapret](https://github.com/bol-van/zapret), [byedpi](https://github.com/hufrea/byedpi), [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI) и работ опубликованных на ntc.party. Их код в этом репозитории не используется (несовместимая лицензия), но их каталоги техник лежат в основе всех дефолтов здесь.
+
+Особое спасибо [Flowseal/zapret-discord-youtube](https://github.com/Flowseal/zapret-discord-youtube) за непрерывное обновление ALT-конфигов под текущие итерации ТСПУ.
+
+---
+
+<sub>SonicDPI — независимый проект. Не аффилирован с Google / YouTube, Discord Inc., Роскомнадзором, операторами ТСПУ или госорганами. Используйте ответственно и в соответствии с местным законодательством.</sub>

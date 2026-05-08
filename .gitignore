@@ -1,0 +1,43 @@
+# Rust build artifacts
+/target
+**/*.rs.bk
+Cargo.lock.bak
+
+# IDE
+.idea/
+.vscode/
+
+# Native build artifacts (binaries / debug info)
+*.pdb
+*.exp
+*.lib
+*.dll
+*.so
+*.dylib
+*.dSYM/
+
+# WinDivert artifacts in build output (NOT in vendor/)
+WinDivert*.sys
+WinDivert*.dll
+!vendor/windivert/**
+!vendor/**/*.dll
+!vendor/**/*.lib
+!vendor/**/*.sys
+
+# Local distribution / packaging output
+/dist
+/release.zip
+
+# Local diagnostic / sweep output
+/.sweep
+/run.log
+/run-test.log
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local profiles / scratch
+*.local.toml
+.env

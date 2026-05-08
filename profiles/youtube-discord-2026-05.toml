@@ -1,0 +1,112 @@
+# SonicDPI — youtube-discord-2026-05
+#
+# Closest the current engine can express to Flowseal v4.6 (Dronatar)
+# from 13.02.2026. Use this for the "everything just broke" case
+# while the v0.3 engine work (multidisorder, fake-tls-mod=sni,
+# badseq increments, syndata, fakeknown/fakedsplit, HTTP/80 fake)
+# lands. See docs/2026-05-status.md for the gap list.
+#
+# Run:
+#   sonicdpi run --profile profiles/youtube-discord-2026-05.toml -vv
+#
+# Diff vs the built-in `youtube-discord` (also bumped to v4.6 deltas):
+#   - Discord voice fake payloads explicitly Google-QUIC, not dbankcloud
+#   - QUIC repeats=11
+#   - DiscordCloudflare seqovl pattern stays 4pda.to / 568 (matches
+#     v4.6's "list-general+Extras" behaviour the closest)
+#
+# Things this profile CANNOT do today (need engine v0.3):
+#   - fake-tls-mod=rnd,dupsid,sni=vk.me   → no SNI rewrite for fakes
+#   - badseq-increment / badack-increment → no per-Fooling tunables
+#   - real-TLS multidisorder (out-of-order) → engine ships multisplit
+#   - HTTP/80 fake-http path              → no fake-on-http lane
+#   - syndata for Cloudflare WARP gateway → no syndata strategy
+#   - Discord wide TCP port set 2053/2083/2087/2096/8443
+#                                        → InterceptorConfig only
+#                                          intercepts what's in tcp_ports
+# Until those are implemented, expect this to recover ~70% of cases —
+# YouTube QUIC and most Discord text/CDN; Discord voice should reconnect
+# but call quality may degrade if your ISP also runs the SNI-fake
+# classifier.
+
+name = "youtube-discord-2026-05"
+
+[targets]
+# Same target labels as the built-in. The engine's TargetSet picks
+# these up automatically; the patterns below are the v4.6
+# Flowseal hostlist trimmed to what we actually classify.
+sni_patterns = [
+    ["googlevideo.com",     "YouTube"],
+    ["youtube.com",         "YouTube"],
+    ["youtu.be",            "YouTube"],
+    ["ytimg.com",           "YouTube"],
+    ["ggpht.com",           "YouTube"],
+    ["googleusercontent.com", "YouTube"],
+    ["youtubei.googleapis.com", "YouTube"],
+    ["discord.media",       "DiscordGateway"],
+    ["gateway.discord.gg",  "DiscordGateway"],
+    ["discord.com",         "DiscordCloudflare"],
+    ["discord.gg",          "DiscordCloudflare"],
+    ["discord.app",         "DiscordCloudflare"],
+    ["discordapp.com",      "DiscordCloudflare"],
+    ["discordapp.net",      "DiscordCloudflare"],
+    ["cdn.discordapp.com",  "DiscordCloudflare"],
+    ["media.discordapp.net", "DiscordCloudflare"],
+    ["discordcdn.com",      "DiscordCloudflare"],
+]
+# Flowseal v4.6 Discord (WebRTC) port set.
+discord_voice_udp_ports = [[19294, 19344], [50000, 50032]]
+
+# --- YouTube + DiscordGateway TLS (TCP/443) ----------------------------
+# v4.6 uses `multidisorder` here; we use `multisplit` because that's
+# what's in the engine. Same seqovl + same google-CH pattern, so the
+# DPI desync trigger lands the same way — only the segment-ordering
+# is the difference.
+[[strategies.tls_multisplit]]
+split_pos = 1
+seqovl = 681
+seqovl_decoy_host = "www.google.com"
+targets = ["YouTube", "DiscordGateway"]
+
+# --- DiscordCloudflare TLS ---------------------------------------------
+# The CF edge has a tighter overlap budget; smaller seqovl + 4pda
+# pattern is what zapret has used since spring 2025 and v4.6 keeps.
+[[strategies.tls_multisplit]]
+split_pos = 1
+seqovl = 568
+seqovl_decoy_host = "4pda.to"
+targets = ["DiscordCloudflare"]
+
+# --- YouTube QUIC (UDP/443) --------------------------------------------
+# Repeats=11 from v4.4 (24.12.2025). Anything below 8 gets eaten by the
+# TSPU pre-Initial drop on most RU residential ISPs in May 2026.
+[strategies.quic_fake_initial]
+repeats = 11
+decoy_host = "www.google.com"
+
+# --- Discord-Cloudflare CF-gentle fake (vk.me + TTL=4) ------------------
+# 2026-05: this is the missing piece that makes Discord work on CF.
+# We emit 2 fake ClientHellos with SNI=vk.me (TSPU-whitelisted RU
+# domain) and TTL=4 — the fake dies in transit so CF only sees the
+# real CH and its 6+-rapid-TLS-attempts rate-limit isn't tripped.
+# TSPU sees the vk.me fake first and locks the per-flow classifier
+# on a permitted host. Real CH then arrives, TSPU doesn't
+# re-evaluate. seqovl=0 + split_pos=1 = standalone fake packets,
+# not overlaid on the real CH.
+[[strategies.fake_multisplit]]
+fooling = "ttl=4"
+repeats = 2
+decoy_host = "vk.me"
+split_pos = 1
+seqovl = 0
+targets = ["DiscordCloudflare"]
+
+# --- Discord voice (UDP 19294-19344 + 50000-50032) ---------------------
+# v4.6 uses Google-QUIC Initial as fake-stun AND fake-discord.
+# The captured stun.bin and dbankcloud-QUIC decoys both stopped
+# passing TSPU in autumn 2025.
+[strategies.discord_voice_prime]
+repeats = 6
+cutoff = 4
+# Leave fake_*_path unset → engine falls back to the new defaults
+# (Google-QUIC Initial for both) wired in profile.rs.

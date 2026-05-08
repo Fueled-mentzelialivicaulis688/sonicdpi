@@ -1,0 +1,139 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name (e.g. v0.2.0). Leave empty to use commit SHA.'
+        required: false
+        default: ''
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: SonicDPI-windows-x64
+            ext: .exe
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: SonicDPI-linux-x64
+            ext: ''
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            artifact: SonicDPI-linux-arm64
+            ext: ''
+            cross: true
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact: SonicDPI-macos-x64
+            ext: ''
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: SonicDPI-macos-arm64
+            ext: ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Install Linux deps
+        if: runner.os == 'Linux' && matrix.cross != true
+        run: sudo apt-get update && sudo apt-get install -y libnetfilter-queue-dev nftables
+
+      - name: Install cross
+        if: matrix.cross == true
+        run: cargo install cross --git https://github.com/cross-rs/cross --locked
+
+      - name: Build (cargo)
+        if: matrix.cross != true
+        run: cargo build --release --workspace --target ${{ matrix.target }}
+
+      - name: Build (cross)
+        if: matrix.cross == true
+        run: cross build --release --workspace --target ${{ matrix.target }}
+
+      - name: Stage artifacts
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/sonicdpi${{ matrix.ext }} dist/
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            cp target/${{ matrix.target }}/release/sonicdpi-tray${{ matrix.ext }} dist/
+            cp vendor/windivert/x64/WinDivert.dll dist/
+            cp vendor/windivert/x64/WinDivert64.sys dist/
+          else
+            cp target/${{ matrix.target }}/release/sonicdpi-tray${{ matrix.ext }} dist/ 2>/dev/null || true
+          fi
+          cp README.md README.ru.md LICENSE-MIT LICENSE-APACHE THIRD_PARTY_LICENSES.md dist/
+
+      - name: Pack (zip on Windows, tar.gz elsewhere)
+        shell: bash
+        run: |
+          cd dist
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            7z a ../${{ matrix.artifact }}.zip ./*
+          else
+            tar -czf ../${{ matrix.artifact }}.tar.gz ./*
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            ${{ matrix.artifact }}.zip
+            ${{ matrix.artifact }}.tar.gz
+          if-no-files-found: ignore
+          retention-days: 7
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Flatten artifacts
+        run: |
+          mkdir -p release-assets
+          find artifacts -type f \( -name '*.zip' -o -name '*.tar.gz' \) -exec cp {} release-assets/ \;
+          ls -la release-assets
+
+      - name: Generate checksums
+        run: |
+          cd release-assets
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

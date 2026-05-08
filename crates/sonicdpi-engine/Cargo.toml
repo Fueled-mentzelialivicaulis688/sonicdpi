@@ -1,0 +1,18 @@
+[package]
+name = "sonicdpi-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Protocol-agnostic DPI evasion engine: flow tracking, TLS ClientHello / QUIC Initial parsing, strategy pipeline."
+
+[dependencies]
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+bytes.workspace = true
+once_cell.workspace = true
+serde = { workspace = true }
+etherparse.workspace = true
+ipnet.workspace = true

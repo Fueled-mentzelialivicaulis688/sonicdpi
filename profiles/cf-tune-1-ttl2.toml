@@ -1,0 +1,35 @@
+# CF tune #1: TTL=2 (фейк умирает раньше — для случая когда CF близко)
+name = "cf-tune-1-ttl2"
+[targets]
+sni_patterns = [
+    ["googlevideo.com", "YouTube"], ["youtube.com", "YouTube"],
+    ["ytimg.com", "YouTube"], ["ggpht.com", "YouTube"],
+    ["googleusercontent.com", "YouTube"],
+    ["discord.media", "DiscordGateway"], ["gateway.discord.gg", "DiscordGateway"],
+    ["discord.com", "DiscordCloudflare"], ["discord.gg", "DiscordCloudflare"],
+    ["discordapp.com", "DiscordCloudflare"], ["discordapp.net", "DiscordCloudflare"],
+    ["cdn.discordapp.com", "DiscordCloudflare"],
+]
+discord_voice_udp_ports = [[19294, 19344], [50000, 50032]]
+
+[[strategies.tls_multisplit]]
+split_pos = 1
+seqovl = 681
+seqovl_decoy_host = "www.google.com"
+targets = ["YouTube", "DiscordGateway"]
+
+[[strategies.fake_multisplit]]
+fooling = "ttl=2"
+repeats = 4
+decoy_host = "vk.me"
+split_pos = 0
+seqovl = 0
+targets = ["DiscordCloudflare"]
+
+[strategies.quic_fake_initial]
+repeats = 11
+decoy_host = "www.google.com"
+
+[strategies.discord_voice_prime]
+repeats = 6
+cutoff = 4

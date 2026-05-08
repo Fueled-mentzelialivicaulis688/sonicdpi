@@ -38,6 +38,9 @@ WinDivert*.dll
 .DS_Store
 Thumbs.db
 
+# Claude Code harness runtime files
+.claude/
+
 # Local profiles / scratch
 *.local.toml
 .env

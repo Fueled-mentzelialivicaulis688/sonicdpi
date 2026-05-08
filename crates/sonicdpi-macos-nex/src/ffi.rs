@@ -34,6 +34,10 @@ static STATE: OnceCell<State> = OnceCell::new();
 
 /// Initialize the engine with a built-in profile name.
 /// Returns 0 on success, non-zero on error.
+///
+/// # Safety
+/// `profile_name` must point to `profile_name_len` valid UTF-8 bytes
+/// the caller keeps live for the duration of this call.
 #[no_mangle]
 pub unsafe extern "C" fn sonicdpi_nex_init(
     profile_name: *const u8,
@@ -75,6 +79,12 @@ pub unsafe extern "C" fn sonicdpi_nex_init(
 /// When the return is `Verdict::Modified`, the caller MUST then call
 /// `sonicdpi_nex_take_modified(out, cap)` on the same thread to retrieve
 /// the new bytes before processing the next packet.
+///
+/// # Safety
+/// `bytes` must point to `len` valid bytes for the duration of this
+/// call. The pointer is read-only — we copy out before returning.
+/// Callers MUST serialize concurrent calls (the NEFilterPacketProvider
+/// dispatch queue does this for us).
 #[no_mangle]
 pub unsafe extern "C" fn sonicdpi_nex_process(bytes: *const u8, len: usize, direction: u8) -> u8 {
     let Some(state) = STATE.get() else {
@@ -126,6 +136,12 @@ pub unsafe extern "C" fn sonicdpi_nex_process(bytes: *const u8, len: usize, dire
 /// Copy the last modified packet bytes into the Swift-side buffer.
 /// Returns the actual length copied; 0 if no buffered data or buffer
 /// too small.
+///
+/// # Safety
+/// `out_buf` must point to a writable region of at least `out_cap`
+/// bytes. Caller must invoke this from the same dispatch queue as the
+/// preceding `sonicdpi_nex_process` call to guarantee the buffered
+/// bytes match that packet.
 #[no_mangle]
 pub unsafe extern "C" fn sonicdpi_nex_take_modified(out_buf: *mut u8, out_cap: usize) -> usize {
     let Some(state) = STATE.get() else {
@@ -143,6 +159,10 @@ pub unsafe extern "C" fn sonicdpi_nex_take_modified(out_buf: *mut u8, out_cap: u
 
 /// Tear down the engine. Swift calls this from
 /// `stopFilter(with reason:completionHandler:)`.
+///
+/// # Safety
+/// Must be called at most once per process. After this call no further
+/// `sonicdpi_nex_process` invocations are valid.
 #[no_mangle]
 pub unsafe extern "C" fn sonicdpi_nex_shutdown() {
     tracing::info!("macOS NEX engine shutdown");

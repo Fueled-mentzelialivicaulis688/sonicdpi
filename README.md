@@ -6,6 +6,24 @@
 [![Rust](https://img.shields.io/badge/rust-stable-orange.svg)](https://www.rust-lang.org/)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](#поддерживаемые-платформы)
 
+> [!CAUTION]
+> ## 🔴 Помоги проекту — пришли результаты sweep со своего провайдера
+>
+> Рабочий профиль зависит от того, **какой DPI стоит у вашего ISP**. Один-единственный конфиг, который пробивает у меня в Москве, может не пробивать в Перми. Мне нужны полевые данные с разных провайдеров и регионов, чтобы добавить новые `youtube-discord-*` профили в дефолтную поставку.
+>
+> **Что сделать (3 минуты):**
+>
+> 1. Скачайте [последний релиз](https://github.com/by-sonic/sonicdpi/releases/latest), распакуйте.
+> 2. **Windows** (admin PowerShell): `Start-Process powershell -Verb RunAs -ArgumentList '-NoExit','-ExecutionPolicy','Bypass','-File','.\sweep.ps1','-Quick'`
+>    **Linux/macOS**: `sudo ./sweep.sh --quick` *(в работе, см. issue #4)*
+> 3. Дождитесь завершения (~3-10 минут, прогон 30 конфигов).
+> 4. **Откройте новый issue** через [готовый шаблон Field report](https://github.com/by-sonic/sonicdpi/issues/new?template=field-report.yml) и приложите:
+>    - **Провайдер и регион** (например: «Ростелеком, Москва» или «ER-Telecom, Пермь»)
+>    - **Полный stdout sweep-а** (от `=== ENV ===` до `=== DONE ===`)
+>    - Сторонне: какой `winws.exe` / `zapret` / `goodbyedpi`-конфиг у вас работает сейчас (если есть)
+>
+> Чем больше отчётов, тем быстрее у `sonicdpi run` появится опция «попробовать всё подряд» с кешем рабочих рецептов по ISP. Спасибо.
+
 **Открытый кросс-платформенный обход DPI для YouTube и Discord (включая голосовые каналы).** Альтернатива zapret / GoodbyeDPI / byedpi на Rust — один движок, три ОС, готовые сборки. Снимает замедление YouTube, чинит «Checking for updates» и «Update failed» в Discord, возвращает голосовые каналы.
 
 **Telegram-боты автора:**

@@ -1,0 +1,69 @@
+name: 📡 Field report (sweep result)
+description: Прислать результат sweep.ps1 с твоего провайдера, чтобы добавить новый рабочий профиль в дефолт.
+title: "Field report — <ISP> / <region>"
+labels: ["field-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо что помогаешь! Чтобы я мог добавить твой ISP в дефолтные профили — нужно три вещи: где, какой sweep-вывод, и опционально какой посторонний инструмент у тебя сейчас работает.
+
+  - type: input
+    id: isp
+    attributes:
+      label: Провайдер и регион
+      description: 'Например: "Ростелеком, Москва" или "ER-Telecom (Дом.ру), Пермь" или "Билайн mobile, Краснодар"'
+      placeholder: ISP, город
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: ОС
+      options:
+        - Windows 10
+        - Windows 11
+        - Linux (укажи дистрибутив в комментарии)
+        - macOS
+    validations:
+      required: true
+
+  - type: textarea
+    id: sweep-output
+    attributes:
+      label: Полный вывод sweep
+      description: |
+        Прогон `sweep.ps1` (минимум `-Quick`, лучше полный без флага) — копируй ВСЁ от `=== ENV ===` до `=== DONE ===`. Чем больше — тем лучше.
+      render: text
+      placeholder: |
+        === ENV ===
+        date:    ...
+        bin:     ...
+        ...
+        === DONE ===
+    validations:
+      required: true
+
+  - type: input
+    id: working-tool
+    attributes:
+      label: Какой посторонний инструмент у тебя сейчас работает (опционально)
+      description: |
+        Если у тебя на этом ISP уже работает goodbyedpi / zapret / byedpi / winws — напиши какой именно `.bat` / параметры. Это огромная подсказка для меня какие техники добавить.
+      placeholder: 'general (ALT9).bat от Flowseal v4.6 — ts fooling, ozon.ru decoy'
+
+  - type: textarea
+    id: extras
+    attributes:
+      label: Что-нибудь ещё (опционально)
+      description: |
+        Например: «у меня дома Ростелеком, на работе МТС — на работе всё работает, дома не пробивает». Или: «попробовал ещё конфиг X с фуллингом Y, дал N/4». Любая полезная инфа.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Подтверждение
+      options:
+        - label: Я не включил в вывод чувствительные данные (домены, к которым я ходил, кроме самих тестовых хостов sweep-а; локальные IP-адреса).
+          required: true

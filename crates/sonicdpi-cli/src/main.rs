@@ -300,21 +300,15 @@ fn print_banner(profile_name: &str) {
     const YELLOW: &str = "\x1b[33m";
     const GRAY: &str = "\x1b[90m";
 
+    let _ = (BOLD, BLUE, MAGENTA);
     let version = env!("CARGO_PKG_VERSION");
     println!();
     println!("{CYAN}╔══════════════════════════════════════════════════════════════════╗{RESET}");
-    println!("{CYAN}║{RESET}  {BOLD}SonicDPI v{version}{RESET}  —  обход блокировок YouTube + Discord       {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}  {BOLD}SonicDPI v{version}{RESET}  —  YouTube + Discord, Win / Linux / macOS   {CYAN}║{RESET}");
     println!("{CYAN}║{RESET}  {GRAY}github.com/by-sonic/sonicdpi{RESET}                                    {CYAN}║{RESET}");
     println!("{CYAN}║                                                                  ║{RESET}");
-    println!("{CYAN}║{RESET}  {YELLOW}▼ Если SonicDPI не пробивает — возьми VPN от автора:{RESET}            {CYAN}║{RESET}");
-    println!("{CYAN}║                                                                  ║{RESET}");
-    println!("{CYAN}║{RESET}    {BLUE}{BOLD}@bysonicvpn_bot{RESET}                                              {CYAN}║{RESET}");
-    println!("{CYAN}║{RESET}    {GRAY}VLESS + Reality + Xray + Hysteria 2 — стандартный стек{RESET}      {CYAN}║{RESET}");
-    println!("{CYAN}║{RESET}    {GRAY}https://t.me/bysonicvpn_bot{RESET}                                  {CYAN}║{RESET}");
-    println!("{CYAN}║                                                                  ║{RESET}");
-    println!("{CYAN}║{RESET}    {MAGENTA}{BOLD}@galevpn_bot{RESET}                                                 {CYAN}║{RESET}");
-    println!("{CYAN}║{RESET}    {GRAY}SonicProtocol — собственный анти-ТСПУ протокол{RESET}              {CYAN}║{RESET}");
-    println!("{CYAN}║{RESET}    {GRAY}https://t.me/galevpn_bot{RESET}                                     {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}  {YELLOW}🌹 RoseVPN{RESET}  {GRAY}— быстрый VPN на случай если DPI-десинк не хватает{RESET}    {CYAN}║{RESET}");
+    println!("{CYAN}║{RESET}  {GRAY}https://t.me/rosevpnru_bot{RESET}                                      {CYAN}║{RESET}");
     println!("{CYAN}║                                                                  ║{RESET}");
     println!(
         "{CYAN}║{RESET}  Профиль: {BOLD}{:<54}{RESET} {CYAN}║{RESET}",

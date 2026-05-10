@@ -113,8 +113,7 @@ struct MenuIds {
     toggle: tray_icon::menu::MenuId,
     profile_items: Vec<(tray_icon::menu::MenuId, &'static str)>,
     open_logs: tray_icon::menu::MenuId,
-    bot_galevpn: tray_icon::menu::MenuId,
-    bot_bysonicvpn: tray_icon::menu::MenuId,
+    bot_rosevpn: tray_icon::menu::MenuId,
     open_github: tray_icon::menu::MenuId,
     quit: tray_icon::menu::MenuId,
 }
@@ -132,8 +131,7 @@ impl TrayApp {
                 toggle: Default::default(),
                 profile_items: Vec::new(),
                 open_logs: Default::default(),
-                bot_galevpn: Default::default(),
-                bot_bysonicvpn: Default::default(),
+                bot_rosevpn: Default::default(),
                 open_github: Default::default(),
                 quit: Default::default(),
             },
@@ -187,16 +185,11 @@ impl TrayApp {
         let _ = menu.append(&open_logs);
 
         let _ = menu.append(&PredefinedMenuItem::separator());
-        // VPN-сервисы автора — fallback когда DPI-обхода не хватает
-        let vpn_sub = Submenu::new("Если не работает — VPN от автора", true);
-        let bot_bysonicvpn =
-            MenuItem::new("@bysonicvpn_bot — VLESS + Reality + Xray + HY2", true, None);
-        self.menu_ids.bot_bysonicvpn = bot_bysonicvpn.id().clone();
-        let _ = vpn_sub.append(&bot_bysonicvpn);
-        let bot_galevpn = MenuItem::new("@galevpn_bot — SonicProtocol (анти-ТСПУ)", true, None);
-        self.menu_ids.bot_galevpn = bot_galevpn.id().clone();
-        let _ = vpn_sub.append(&bot_galevpn);
-        let _ = menu.append(&vpn_sub);
+        // RoseVPN — fallback когда DPI-десинка не хватает
+        let bot_rosevpn =
+            MenuItem::new("🌹 RoseVPN — @rosevpnru_bot (если не работает)", true, None);
+        self.menu_ids.bot_rosevpn = bot_rosevpn.id().clone();
+        let _ = menu.append(&bot_rosevpn);
 
         let open_github = MenuItem::new("GitHub: by-sonic/sonicdpi", true, None);
         self.menu_ids.open_github = open_github.id().clone();
@@ -251,10 +244,8 @@ impl TrayApp {
             self.toggle();
         } else if id == &self.menu_ids.open_logs {
             open_logs_folder();
-        } else if id == &self.menu_ids.bot_galevpn {
-            open_url("https://t.me/galevpn_bot");
-        } else if id == &self.menu_ids.bot_bysonicvpn {
-            open_url("https://t.me/bysonicvpn_bot");
+        } else if id == &self.menu_ids.bot_rosevpn {
+            open_url("https://t.me/rosevpnru_bot");
         } else if id == &self.menu_ids.open_github {
             open_url("https://github.com/by-sonic/sonicdpi");
         } else if id == &self.menu_ids.quit {

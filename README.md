@@ -1,3 +1,17 @@
+<!-- ROSEVPN-BANNER-START -->
+<p align="center">
+  <a href="https://t.me/rosevpnru_bot">
+    <img alt="RoseVPN — быстрый VPN" src="https://img.shields.io/badge/%F0%9F%8C%B9%20RoseVPN-%D0%9F%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C%D1%81%D1%8F%20%D0%B2%20Telegram-E63946?style=for-the-badge&logo=telegram&logoColor=white&labelColor=1a1a1a" height="40"/>
+  </a>
+</p>
+<p align="center">
+  <sub><b>Быстрый VPN с обходом YouTube, Discord, Instagram</b> · Бесплатный пробный период · Подключение за 30 секунд через бот <a href="https://t.me/rosevpnru_bot">@rosevpnru_bot</a></sub>
+</p>
+
+---
+
+<!-- ROSEVPN-BANNER-END -->
+
 # SonicDPI — обход блокировок YouTube и Discord (Windows / Linux / macOS)
 
 [![CI](https://github.com/by-sonic/sonicdpi/actions/workflows/ci.yml/badge.svg)](https://github.com/by-sonic/sonicdpi/actions/workflows/ci.yml)
@@ -26,9 +40,7 @@
 
 **Открытый кросс-платформенный обход DPI для YouTube и Discord (включая голосовые каналы).** Альтернатива zapret / GoodbyeDPI / byedpi на Rust — один движок, три ОС, готовые сборки. Снимает замедление YouTube, чинит «Checking for updates» и «Update failed» в Discord, возвращает голосовые каналы.
 
-**Telegram-боты автора:**
-- [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — VLESS + Reality + Xray + Hysteria 2. Базовая надёжная связка для любого Wireguard/V2Ray-клиента.
-- [@galevpn_bot](https://t.me/galevpn_bot) — собственный обфускационный протокол **SonicProtocol**, заточенный под РФ-ТСПУ когда классические VLESS/Reality уже палятся.
+**VPN-сервис автора:** 🌹 [@rosevpnru_bot](https://t.me/rosevpnru_bot) — RoseVPN, быстрый VPN с обходом блокировок (VLESS + Reality + Xray + Hysteria 2). Используйте если SonicDPI на вашем провайдере не пробивает.
 
 ## ⬇ Скачать готовые сборки
 
@@ -222,12 +234,9 @@ cutoff  = 4
 
 ## Если SonicDPI не справляется
 
-Если ваш провайдер блокирует SonicDPI на L4 (carrier-grade DPI с deep mid-stream классификатором, BGP-фильтрация YouTube IP, полный SNI-блок на edge) — fallback это VPN. Автор поддерживает два собственных:
+Если ваш провайдер блокирует SonicDPI на L4 (carrier-grade DPI с deep mid-stream классификатором, BGP-фильтрация YouTube IP, полный SNI-блок на edge) — fallback это VPN.
 
-- 🤖 [@bysonicvpn_bot](https://t.me/bysonicvpn_bot) — **VLESS + Reality + Xray + Hysteria 2**. Стандартный стек, работает с любым клиентом v2rayN / Hiddify / NekoBox / Streisand.
-- 🤖 [@galevpn_bot](https://t.me/galevpn_bot) — **SonicProtocol** — собственный обфускационный протокол, заточенный под актуальные итерации ТСПУ. Подключается через брендированный клиент. Использовать когда обычный VLESS/Reality уже палится на этом провайдере.
-
-Оба бота — про обход блокировок в РФ, на знании тех же маршрутов которыми калибруется этот проект.
+🌹 **[RoseVPN — @rosevpnru_bot](https://t.me/rosevpnru_bot)** — быстрый VPN автора. VLESS + Reality + Xray + Hysteria 2. Подключение через Telegram-бота за 30 секунд, работает с любым клиентом v2rayN / Hiddify / NekoBox / Streisand.
 
 ## Документация
 

